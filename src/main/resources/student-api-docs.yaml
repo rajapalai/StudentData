@@ -1,0 +1,208 @@
+openapi: 3.0.1
+info:
+  title: student api
+  description: Student microservice
+  version: "3.0"
+servers:
+- url: http://localhost:8989
+  description: Generated server url
+paths:
+  /student/updateStudent/{studentId}:
+    put:
+      tags:
+      - student-controller
+      operationId: updateStudent
+      parameters:
+      - name: studentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Student'
+  /student/postStudent:
+    post:
+      tags:
+      - student-controller
+      operationId: saveStudent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Student'
+  /student/pagingAndSorting/{offset}/{pageSize}/{field}:
+    get:
+      tags:
+      - student-controller
+      operationId: getStudentWithSortAndPaging
+      parameters:
+      - name: offset
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: pageSize
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: field
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PageStudent'
+  /student/listStudent:
+    get:
+      tags:
+      - student-controller
+      operationId: getAllStudent
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+  /student/getById/{studentId}:
+    get:
+      tags:
+      - student-controller
+      operationId: getStudentById
+      parameters:
+      - name: studentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Student'
+  /student/deleteStudent/{studentId}:
+    delete:
+      tags:
+      - student-controller
+      operationId: deleteById
+      parameters:
+      - name: studentId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+components:
+  schemas:
+    Student:
+      type: object
+      properties:
+        studentId:
+          type: integer
+          format: int64
+        studentName:
+          type: string
+        studentAddress:
+          type: string
+        admissionDate:
+          type: string
+          format: date-time
+    PageStudent:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Student'
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/Sort'
+        first:
+          type: boolean
+        last:
+          type: boolean
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: '#/components/schemas/Pageable'
+        empty:
+          type: boolean
+    Pageable:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: '#/components/schemas/Sort'
+        pageSize:
+          type: integer
+          format: int32
+        pageNumber:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+    Sort:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+        empty:
+          type: boolean

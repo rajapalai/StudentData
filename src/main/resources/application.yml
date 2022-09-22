@@ -1,0 +1,20 @@
+server:
+  port: 8555
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://new-db.csi1poblvwnu.us-east-1.rds.amazonaws.com:3306/spring-db-aws
+    username: root
+    password: rootroot
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect#  boot:#    admin:#      client:#        url:#        - http://localhost:8512#        instance:#          service-base-url:   boot:    admin:      client:        instance:          service-base-url: http://localhost:8512  
+
+springdoc:  api-docs:    path: /student-api-docs 
+management:  endpoints:    web:      exposure:        include:        - "*"
+  endpoint:    health:      show-details: always
+
+    
