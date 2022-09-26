@@ -25,44 +25,50 @@ pipeline {
 		stage ('Artifactory configuration') {
 			steps {
 				rtServer (
-						id: "jfrog",
-						url: "http://34.228.64.200:8082/artifactory",
-						credentialsId: "jfrog"
-						)
+				id: "jfrog",
+				url: "http://34.228.64.200:8082/artifactory",
+				credentialsId: "jfrog"
+				)
 
 				rtMavenDeployer (
-						id: "MAVEN_DEPLOYER",
-						serverId: "jfrog",
-						releaseRepo: "libs-release-local",
-						snapshotRepo: "libs-snapshot-local"
-						)
+				id: "MAVEN_DEPLOYER",
+				serverId: "jfrog",
+				releaseRepo: "libs-release-local",
+				snapshotRepo: "libs-snapshot-local"
+				)
 
 				rtMavenResolver (
-						id: "MAVEN_RESOLVER",
-						serverId: "jfrog",
-						releaseRepo: "libs-release",
-						snapshotRepo: "libs-snapshot"
-						)
+				id: "MAVEN_RESOLVER",
+				serverId: "jfrog",
+				releaseRepo: "libs-release",
+				snapshotRepo: "libs-snapshot"
+				)
 			}
 		}
 
 		stage ('Deploy Artifacts') {
 			steps {
-				rtMavenRun (
-						tool: "maven",
-						pom: 'StudentData/pom.xml',
-						goals: 'mvn clean install deploy',
-						deployerId: "MAVEN_DEPLOYER",
-						resolverId: "MAVEN_RESOLVER"
-						)
+				rtUpload (
+				serverId: "jfrog",
+				pom: 'pom.xml',
+				spec: '''{
+						"files" : [
+						"pattern" : "*.war",
+						"target" : "libs-release"
+						]
+						}''',
+				goals: 'clean install',
+				deployerId: "MAVEN_DEPLOYER",
+				resolverId: "MAVEN_RESOLVER"
+				)
 			}
 		}
 
 		stage ('Publish build info') {
 			steps {
 				rtPublishBuildInfo (
-						serverId: "jfrog"
-						)
+				serverId: "jfrog"
+				)
 			}
 		}
 	}
