@@ -9,20 +9,16 @@ pipeline {
 				checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [
 						[credentialsId: 'github', url: 'https://github.com/rajapalai/StudentData.git']
 					]])
-			}
-		}
-		stage ('Build'){
-			steps {
 				sh 'mvn clean install'
 			}
 		}
-		stage ('Package') {
+		stage ('Maven build') {
 			steps {
 				sh 'mvn package'
 			}
 		}
 
-		stage ('Artifactory configuration') {
+		stage ('Jfrog artifactory configuration') {
 			steps {
 				rtServer (
 						id: "jfrog",
@@ -45,23 +41,34 @@ pipeline {
 						)
 			}
 		}
-
-		stage ('Deploy Artifacts') {
+		stage ('Jfrog artifactory deployment') {
+			steps {
+				rtMavenRun (
+						tool: "maven",
+						pom: 'pom.xml',
+						goals: 'clean install deploy',
+						deployerId: "MAVEN_DEPLOYER",
+						resolverId: "MAVEN_RESOLVER"
+						)
+			}
+		}
+		stage ('Deploy artifacts into libs-release-local file') {
 			steps {
 				rtUpload (
 						serverId: "jfrog",
-
 						spec: '''{
-						"files" : [
-						"pattern" : "*.war",
-						"target" : "libs-release"
-						]
-						}''',
+		 						"files" : [
+		 							{
+		 							"pattern" : "StudentData.war",
+		 							"target" : "libs-release-local"
+		 							}
+		 						]
+		 					}''',
 						)
 			}
 		}
 
-		stage ('Publish build info') {
+		stage ('Publish Build Info') {
 			steps {
 				rtPublishBuildInfo (
 						serverId: "jfrog"
