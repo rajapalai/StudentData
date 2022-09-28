@@ -92,7 +92,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>devops-integration</finalName>
+		<finalName>studentRecord</finalName>
 	</build>
 	<distributionManagement>
 		<repository>
